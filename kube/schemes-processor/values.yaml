@@ -1,0 +1,61 @@
+image: impressions-processor:latest
+internalPort: 80
+pullPolicy: IfNotPresent
+livenessProbe:
+  path: /status/isalive
+  initialDelaySeconds: 60
+  periodSeconds: 60
+  timeoutSeconds: 10
+readinessProbe:
+  path: /status/isready
+  initialDelaySeconds: 30
+  periodSeconds: 20
+  timeoutSeconds: 5
+replicaCount: 1
+env:
+  ELASTIC_SEARCH_CLIENT_URL: http://ml-es-elasticsearch-client.default.svc.cluster.local:9200
+  ELASTIC_SEARCH_EVENT_STORE_IMPRESSIONS_INDEX_NAME: impressions-event-store
+  ELASTIC_SEARCH_SNAPSHOT_IMPRESSIONS_INDEX_NAME: impressions-snapshot
+  ELASTIC_SEARCH_EVENT_STORE_SHARDS: 2
+  ELASTIC_SEARCH_EVENT_STORE_REPLICAS: 1
+  ELASTIC_SEARCH_SNAPSHOT_SHARDS: 2
+  ELASTIC_SEARCH_SNAPSHOT_REPLICAS: 0
+  AGGREGATE_CACHE_ENABLED: false
+  AGGREGATE_CACHE_SLIDING_EXPIRATION_SECONDS: 10
+  AGGREGATE_CACHE_ABSOLUTE_EXPIRATION_SECONDS: 60
+  AGGREGATE_MAX_EVENTS_COUNT: 10
+  IMPRESSIONS_EVENTS_TOPIC: impressions-events
+  EVENT_TOPICS: |-
+    [
+      "impressions-events"
+    ]
+  REQUEST_TOPICS: |-
+    [
+      "impressions-requests"
+    ]
+  KAFKA_EVENTS_CONSUMER_CONFIG: |-
+    {
+      "group.id": "impressions-events-processor",
+      "bootstrap.servers": "bootstrap.kafka:9092",
+      "partition.assignment.strategy": "range",
+      "enable.auto.commit": false,
+      "auto.commit.interval.ms": 1000,
+      "auto.offset.reset": "earliest"
+    }
+  KAFKA_REQUESTS_CONSUMER_CONFIG: |-
+    {
+      "group.id": "impressions-requests-processor",
+      "bootstrap.servers": "bootstrap.kafka:9092",
+      "partition.assignment.strategy": "range",
+      "enable.auto.commit": false,
+      "auto.commit.interval.ms": 1000,
+      "auto.offset.reset": "earliest"
+    }
+  KAFKA_EVENTS_PRODUCER_CONFIG: |-
+    {
+      "bootstrap.servers": "bootstrap.kafka:9092"
+    }
+  KAFKA_REQUESTS_PRODUCER_CONFIG: |-
+    {
+      "bootstrap.servers": "bootstrap.kafka:9092"
+    }

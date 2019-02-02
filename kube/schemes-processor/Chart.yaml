@@ -1,0 +1,4 @@
+apiVersion: v1
+description: "Process manager for Midnight Lizard Impressions: likes and favorites."
+name: impressions-processor
+version: 0.1.0

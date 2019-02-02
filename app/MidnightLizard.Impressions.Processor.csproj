@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <LangVersion>Latest</LangVersion>
+    <Configurations>Debug;Release;Test</Configurations>
+    <StartupObject>MidnightLizard.Impressions.Processor.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
+    <PackageReference Include="MediatR" Version="6.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="6.0.1" />
+    <PackageReference Include="MidnightLizard.Commons.Domain" Version="2.2.1" />
+    <PackageReference Include="SemanticVersioning" Version="1.2.0" />
+  </ItemGroup>
+
+  <Choose>
+    <When Condition=" '$(Configuration)'=='Test' ">
+      <ItemGroup>
+        <PackageReference Include="MidnightLizard.Testing.Utilities" Version="2.3.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)'!='Test' ">
+      <ItemGroup>
+        <Compile Remove="**/*.Spec.cs" />
+        <Compile Remove="**/*.Stub.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\domain\MidnightLizard.Impressions.Domain.csproj" />
+    <ProjectReference Include="..\infrastructure\MidnightLizard.Impressions.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
