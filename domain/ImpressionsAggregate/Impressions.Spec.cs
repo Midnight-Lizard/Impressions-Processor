@@ -30,9 +30,9 @@ namespace MidnightLizard.Impressions.Domain.ImpressionsAggregate
             return Substitute.ForPartsOf<ImpressionAddedEvent>(this.Id, objectType);
         }
 
-        protected override ImpressionsChangedEvent CreateImpressionsChangedEvent(IReadOnlyCollection<UserId> impressionists, ImpressionsObjectType objectType)
+        protected override ImpressionsChangedEvent CreateImpressionsChangedEvent()
         {
-            return Substitute.ForPartsOf<ImpressionsChangedEvent>(this.Id, objectType, impressionists);
+            return Substitute.ForPartsOf<ImpressionsChangedEvent>(this.Id, this.ObjectType, this._Impressionists);
         }
 
         protected override ImpressionRemovedEvent CreateImpressionRemovedEvent(ImpressionsObjectType objectType)
