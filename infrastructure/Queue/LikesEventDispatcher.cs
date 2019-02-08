@@ -4,11 +4,11 @@ using MidnightLizard.Impressions.Infrastructure.Serialization.Common;
 
 namespace MidnightLizard.Impressions.Infrastructure.Queue
 {
-    public class ImpressionsEventDispatcher : DomainEventDispatcher<ImpressionsObjectId>
+    public class LikesEventDispatcher : DomainEventDispatcher<ImpressionsObjectId>
     {
         private readonly LikesKafkaConfig impressionsKafkaConfig;
 
-        public ImpressionsEventDispatcher(
+        public LikesEventDispatcher(
             LikesKafkaConfig impressionsKafkaConfig,
             KafkaConfig kafkaConfig,
             IMessageSerializer messageSerializer) : base(kafkaConfig, messageSerializer)
