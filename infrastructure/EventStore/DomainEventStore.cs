@@ -17,7 +17,6 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
         protected readonly ElasticSearchConfig config;
         protected readonly IMessageSerializer messageSerializer;
         protected readonly ElasticClient elasticClient;
-        protected abstract string IndexName { get; }
 
         public DomainEventStore(ElasticSearchConfig config, IMessageSerializer messageSerializer)
         {
@@ -29,7 +28,7 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
 
         protected virtual void CheckIndexExists()
         {
-            if ((this.elasticClient.IndexExists(this.IndexName)).Exists == false)
+            if ((this.elasticClient.IndexExists(this.config.EventStoreIndexName)).Exists == false)
             {
                 this.CreateIndex();
             }
@@ -38,7 +37,7 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
         protected virtual void CreateIndex()
         {
             this.elasticClient
-                .CreateIndex(this.IndexName, ix => ix
+                .CreateIndex(this.config.EventStoreIndexName, ix => ix
                     .Mappings(map => map
                         .Map<ITransportMessage<EventSourcedDomainEvent<TAggregateId>, TAggregateId>>(tm => tm
                             .RoutingField(x => x.Required())
@@ -57,13 +56,13 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
                                             .Name(n => n.Generation)
                                             .Type(NumberType.Integer)))))))
                     .Settings(set => set
-                        .NumberOfShards(this.config.ELASTIC_SEARCH_EVENT_STORE_SHARDS)
-                        .NumberOfReplicas(this.config.ELASTIC_SEARCH_EVENT_STORE_REPLICAS)));
+                        .NumberOfShards(this.config.EventStoreShards)
+                        .NumberOfReplicas(this.config.EventStoreReplicas)));
         }
 
         protected virtual ElasticClient CreateElasticClient()
         {
-            var node = new Uri(this.config.ELASTIC_SEARCH_CLIENT_URL);
+            var node = new Uri(this.config.ClientUrl);
             return new ElasticClient(this.InitDefaultMapping(new ConnectionSettings(
                 new SingleNodeConnectionPool(node),
                 (builtin, settings) => new DomainEventSerializer(this.messageSerializer))));
@@ -76,7 +75,7 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
                 .DefaultMappingFor<ITransportMessage<EventSourcedDomainEvent<TAggregateId>, TAggregateId>>(map => map
                      .IdProperty(to => to.Id)
                      .RoutingProperty(x => x.AggregateId)
-                     .IndexName(this.IndexName)
+                     .IndexName(this.config.EventStoreIndexName)
                      .TypeName("event"));
         }
 

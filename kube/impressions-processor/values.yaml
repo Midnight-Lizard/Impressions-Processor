@@ -13,27 +13,45 @@ readinessProbe:
   timeoutSeconds: 5
 replicaCount: 1
 env:
-  ELASTIC_SEARCH_CLIENT_URL: http://ml-es-elasticsearch-client.default.svc.cluster.local:9200
-  ELASTIC_SEARCH_EVENT_STORE_IMPRESSIONS_INDEX_NAME: impressions-event-store
-  ELASTIC_SEARCH_SNAPSHOT_IMPRESSIONS_INDEX_NAME: impressions-snapshot
-  ELASTIC_SEARCH_EVENT_STORE_SHARDS: 2
-  ELASTIC_SEARCH_EVENT_STORE_REPLICAS: 1
-  ELASTIC_SEARCH_SNAPSHOT_SHARDS: 2
-  ELASTIC_SEARCH_SNAPSHOT_REPLICAS: 0
+  LIKES_ELASTIC_SEARCH_CONFIG: |-
+    {
+      "ClientUrl": "http://ml-es-elasticsearch-client.default.svc.cluster.local:9200",
+      "EventStoreIndexName": "likes-event-store",
+      "EventStoreShards": 2,
+      "EventStoreReplicas": 1,
+      "SnapshotIndexName": "likes-snapshot",
+      "SnapshotShards": 2,
+      "SnapshotReplicas": 0
+    }
+  FAVORITES_ELASTIC_SEARCH_CONFIG: |-
+    {
+      "ClientUrl": "http://ml-es-elasticsearch-client.default.svc.cluster.local:9200",
+      "EventStoreIndexName": "favorites-event-store",
+      "EventStoreShards": 2,
+      "EventStoreReplicas": 1,
+      "SnapshotIndexName": "favorites-snapshot",
+      "SnapshotShards": 2,
+      "SnapshotReplicas": 0
+    }
   AGGREGATE_CACHE_ENABLED: false
   AGGREGATE_CACHE_SLIDING_EXPIRATION_SECONDS: 10
   AGGREGATE_CACHE_ABSOLUTE_EXPIRATION_SECONDS: 60
   AGGREGATE_MAX_EVENTS_COUNT: 10
-  IMPRESSIONS_INTERNAL_EVENTS_TOPIC: impressions-inernal-events
-  IMPRESSIONS_INTEGRATION_EVENTS_TOPIC: impressions-integration-events
-  IMPRESSIONS_FAILED_EVENTS_TOPIC: impressions-failed-events
+  LIKES_INTERNAL_EVENTS_TOPIC: likes-internal-events
+  LIKES_INTEGRATION_EVENTS_TOPIC: likes-integration-events
+  LIKES_FAILED_EVENTS_TOPIC: likes-failed-events
+  FAVORITES_INTERNAL_EVENTS_TOPIC: favorites-internal-events
+  FAVORITES_INTEGRATION_EVENTS_TOPIC: favorites-integration-events
+  FAVORITES_FAILED_EVENTS_TOPIC: favorites-failed-events
   EVENT_TOPICS: |-
     [
-      "impressions-events"
+      "likes-events",
+      "favorites-events"
     ]
   REQUEST_TOPICS: |-
     [
-      "impressions-requests"
+      "likes-requests",
+      "favorites-requests"
     ]
   KAFKA_EVENTS_CONSUMER_CONFIG: |-
     {

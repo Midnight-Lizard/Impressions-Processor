@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,9 +9,7 @@ using MidnightLizard.Impressions.Infrastructure.Configuration;
 using MidnightLizard.Impressions.Processor.AutofacModules;
 using MidnightLizard.Impressions.Processor.Configuration;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace MidnightLizard.Impressions.Processor
 {
@@ -20,7 +17,7 @@ namespace MidnightLizard.Impressions.Processor
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -30,57 +27,63 @@ namespace MidnightLizard.Impressions.Processor
         {
             services.AddOptions();
             services.AddMediatR();
-            services.Configure<AggregatesConfig>(Configuration);
+            services.Configure<AggregatesConfig>(this.Configuration);
 
-            services.AddSingleton<ElasticSearchConfig>(x =>
-            {
-                var esConfig = new ElasticSearchConfig();
-                Configuration.Bind(esConfig);
-                return esConfig;
-            });
-            services.AddSingleton<KafkaConfig>(x => new KafkaConfig
+            services.AddSingleton(x =>
+                JsonConvert.DeserializeObject<LikesElasticSearchConfig>(
+                    this.Configuration.GetValue<string>(
+                        LikesElasticSearchConfig.ConfigName)));
+
+            services.AddSingleton(x =>
+                JsonConvert.DeserializeObject<FavoritesElasticSearchConfig>(
+                    this.Configuration.GetValue<string>(
+                        FavoritesElasticSearchConfig.ConfigName)));
+
+            services.AddSingleton(x => new KafkaConfig
             {
                 KAFKA_EVENTS_CONSUMER_CONFIG = JsonConvert
                     .DeserializeObject<Dictionary<string, object>>(
-                        Configuration.GetValue<string>(
+                        this.Configuration.GetValue<string>(
                             nameof(KafkaConfig.KAFKA_EVENTS_CONSUMER_CONFIG))),
 
                 KAFKA_REQUESTS_CONSUMER_CONFIG = JsonConvert
                     .DeserializeObject<Dictionary<string, object>>(
-                        Configuration.GetValue<string>(
+                        this.Configuration.GetValue<string>(
                             nameof(KafkaConfig.KAFKA_REQUESTS_CONSUMER_CONFIG))),
 
                 KAFKA_EVENTS_PRODUCER_CONFIG = JsonConvert
                     .DeserializeObject<Dictionary<string, object>>(
-                        Configuration.GetValue<string>(
+                        this.Configuration.GetValue<string>(
                             nameof(KafkaConfig.KAFKA_EVENTS_PRODUCER_CONFIG))),
 
                 KAFKA_REQUESTS_PRODUCER_CONFIG = JsonConvert
                     .DeserializeObject<Dictionary<string, object>>(
-                        Configuration.GetValue<string>(
+                        this.Configuration.GetValue<string>(
                             nameof(KafkaConfig.KAFKA_REQUESTS_PRODUCER_CONFIG))),
 
                 EVENT_TOPICS = JsonConvert
                     .DeserializeObject<string[]>(
-                        Configuration.GetValue<string>(
+                        this.Configuration.GetValue<string>(
                             nameof(KafkaConfig.EVENT_TOPICS))),
 
                 REQUEST_TOPICS = JsonConvert
                     .DeserializeObject<string[]>(
-                        Configuration.GetValue<string>(
+                        this.Configuration.GetValue<string>(
                             nameof(KafkaConfig.REQUEST_TOPICS))),
             });
 
-            services.AddSingleton<ImpressionsKafkaConfig>(x => new ImpressionsKafkaConfig
+            services.AddSingleton(x =>
             {
-                IMPRESSIONS_INTERNAL_EVENTS_TOPIC = this.Configuration.GetValue<string>(
-                    nameof(ImpressionsKafkaConfig.IMPRESSIONS_INTERNAL_EVENTS_TOPIC)),
+                var config = new LikesKafkaConfig();
+                this.Configuration.Bind(config);
+                return config;
+            });
 
-                IMPRESSIONS_FAILED_EVENTS_TOPIC = this.Configuration.GetValue<string>(
-                    nameof(ImpressionsKafkaConfig.IMPRESSIONS_FAILED_EVENTS_TOPIC)),
-
-                IMPRESSIONS_INTEGRATION_EVENTS_TOPIC = this.Configuration.GetValue<string>(
-                    nameof(ImpressionsKafkaConfig.IMPRESSIONS_INTEGRATION_EVENTS_TOPIC)),
+            services.AddSingleton(x =>
+            {
+                var config = new FavoritesKafkaConfig();
+                this.Configuration.Bind(config);
+                return config;
             });
 
             services.AddMemoryCache();

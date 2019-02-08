@@ -41,15 +41,15 @@ namespace MidnightLizard.Impressions.Infrastructure.Snapshot
                 .CreateIndex(this.IndexName, ix => ix
                     .Mappings(this.ApplyAggregateMappingsOnIndex)
                     .Settings(set => set
-                        .NumberOfShards(this.config.ELASTIC_SEARCH_SNAPSHOT_SHARDS)
-                        .NumberOfReplicas(this.config.ELASTIC_SEARCH_SNAPSHOT_REPLICAS)));
+                        .NumberOfShards(this.config.SnapshotShards)
+                        .NumberOfReplicas(this.config.SnapshotReplicas)));
         }
 
         protected abstract IPromise<IMappings> ApplyAggregateMappingsOnIndex(MappingsDescriptor md);
 
         protected virtual IElasticClient CreateElasticClient()
         {
-            var node = new Uri(this.config.ELASTIC_SEARCH_CLIENT_URL);
+            var node = new Uri(this.config.ClientUrl);
             return new ElasticClient(this.ApplyAggregateMappingsOnConnection(new ConnectionSettings(
                 new SingleNodeConnectionPool(node),
                 (builtin, settings) => new AggregateSerializer())));
