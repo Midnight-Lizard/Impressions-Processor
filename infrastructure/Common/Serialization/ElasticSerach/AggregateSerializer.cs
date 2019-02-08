@@ -2,6 +2,7 @@
 using MidnightLizard.Impressions.Infrastructure.Serialization.Common.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
 using System.Threading;
@@ -14,11 +15,12 @@ namespace MidnightLizard.Impressions.Infrastructure.Serialization.Common
         private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings
         {
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            ContractResolver = MessageContractResolver.Default,
+            ContractResolver = OrderedContractResolver.Default,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             Converters = new JsonConverter[] {
                     new DomainEntityIdConverter(),
-                    new StringEnumConverter(camelCaseText: true)
+                    new SingleValueTypeConverter(),
+                    new StringEnumConverter(new CamelCaseNamingStrategy())
                 }
         };
 

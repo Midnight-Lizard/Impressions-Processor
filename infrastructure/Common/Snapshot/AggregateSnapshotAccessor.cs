@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Impressions.Infrastructure.Snapshot
 {
-    public abstract class AggregateSnapshotAccessor<TAggregate, TAggregateId> : IAggregateSnapshotAccessor<TAggregate, TAggregateId>
+    public abstract class AggregateSnapshotAccessor<TAggregate, TAggregateId>
+        : IAggregateSnapshotAccessor<TAggregate, TAggregateId>
         where TAggregateId : DomainEntityId
         where TAggregate : AggregateRoot<TAggregateId>
     {
-        protected abstract string IndexName { get; }
         protected readonly IElasticClient elasticClient;
-        protected readonly SchemaVersion version;
+        protected readonly string schemaVersion;
         protected readonly ElasticSearchConfig config;
 
-        public AggregateSnapshotAccessor(SchemaVersion version, ElasticSearchConfig config)
+        public AggregateSnapshotAccessor(string schemaVersion, ElasticSearchConfig config)
         {
-            this.version = version;
+            this.schemaVersion = schemaVersion;
             this.config = config;
             this.elasticClient = this.CreateElasticClient();
             this.CheckIndexExists();
@@ -29,7 +29,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Snapshot
 
         protected virtual void CheckIndexExists()
         {
-            if ((this.elasticClient.IndexExists(this.IndexName)).Exists == false)
+            if ((this.elasticClient.IndexExists(this.config.SnapshotIndexName)).Exists == false)
             {
                 this.CreateIndex();
             }
@@ -38,7 +38,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Snapshot
         protected virtual void CreateIndex()
         {
             this.elasticClient
-                .CreateIndex(this.IndexName, ix => ix
+                .CreateIndex(this.config.SnapshotIndexName, ix => ix
                     .Mappings(this.ApplyAggregateMappingsOnIndex)
                     .Settings(set => set
                         .NumberOfShards(this.config.SnapshotShards)
@@ -61,7 +61,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Snapshot
                .DefaultFieldNameInferrer(i => i)
                .DefaultMappingFor<TAggregate>(map => map
                    .IdProperty(to => to.Id)
-                   .IndexName(this.IndexName)
+                   .IndexName(this.config.SnapshotIndexName)
                    .TypeName("snapshot"));
         }
 
@@ -71,7 +71,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Snapshot
                 .GetAsync<TAggregate>(new DocumentPath<TAggregate>(id.ToString()));
 
             if (result.IsValid &&
-                result.Fields.Value<string>(nameof(Version)) == this.version.ToString())
+                result.Fields.Value<string>(nameof(Version)) == this.schemaVersion)
             {
                 var requestTimestampField = nameof(AggregateSnapshot<TAggregate, TAggregateId>.RequestTimestamp);
 
@@ -83,6 +83,6 @@ namespace MidnightLizard.Impressions.Infrastructure.Snapshot
 
         protected abstract TAggregate CreateNewAggregate(TAggregateId id);
 
-        public abstract Task Save(AggregateSnapshot<TAggregate, TAggregateId> aggregate);
+        public abstract Task Save(AggregateSnapshot<TAggregate, TAggregateId> snapshot);
     }
 }

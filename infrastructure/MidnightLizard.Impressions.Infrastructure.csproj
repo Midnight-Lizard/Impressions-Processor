@@ -21,10 +21,6 @@
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Serialization\Deserializers\" />
-  </ItemGroup>
-
   <Choose>
     <When Condition=" '$(Configuration)'=='Test' ">
       <ItemGroup>

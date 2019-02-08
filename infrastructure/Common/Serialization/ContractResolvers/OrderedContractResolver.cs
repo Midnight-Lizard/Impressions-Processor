@@ -8,10 +8,9 @@ using System.Reflection;
 
 namespace MidnightLizard.Impressions.Infrastructure.Serialization.Common
 {
-
-    public class MessageContractResolver : DefaultContractResolver
+    public class OrderedContractResolver : DefaultContractResolver
     {
-        public static readonly MessageContractResolver Default = new MessageContractResolver();
+        public static readonly OrderedContractResolver Default = new OrderedContractResolver();
 
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {

@@ -7,6 +7,7 @@ using MidnightLizard.Impressions.Infrastructure.Versioning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using SemVer;
 using System;
 using System.Collections.Generic;
@@ -29,11 +30,12 @@ namespace MidnightLizard.Impressions.Infrastructure.Serialization.Common
         {
             //Formatting = Formatting.Indented,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            ContractResolver = MessageContractResolver.Default,
+            ContractResolver = OrderedContractResolver.Default,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             Converters = new JsonConverter[] {
                     new DomainEntityIdConverter(),
-                    new StringEnumConverter(camelCaseText: true)
+                    new SingleValueTypeConverter(),
+                    new StringEnumConverter(new CamelCaseNamingStrategy())
                 }
         };
 

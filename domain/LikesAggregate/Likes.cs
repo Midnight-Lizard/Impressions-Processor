@@ -8,6 +8,9 @@ namespace MidnightLizard.Impressions.Domain.LikesAggregate
 {
     public class Likes : ImpressionsAggregate.Impressions
     {
+        protected Likes() : base() { }
+        public Likes(ImpressionsObjectId aggregateId) : base(aggregateId) { }
+
         public IReadOnlyCollection<UserId> LikedBy
         {
             get => this._Impressionists;

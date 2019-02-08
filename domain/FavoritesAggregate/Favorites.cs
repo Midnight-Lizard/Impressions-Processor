@@ -8,6 +8,9 @@ namespace MidnightLizard.Impressions.Domain.FavoritesAggregate
 {
     public class Favorites : ImpressionsAggregate.Impressions
     {
+        protected Favorites() : base() { }
+        public Favorites(ImpressionsObjectId aggregateId) : base(aggregateId) { }
+
         public IReadOnlyCollection<UserId> FavoritedBy
         {
             get => this._Impressionists;

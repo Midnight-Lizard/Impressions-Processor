@@ -13,7 +13,6 @@ namespace MidnightLizard.Impressions.Infrastructure.Serialization.Common
 {
     public abstract class AbstractMessageDeserializer<TMessage, TAggregateId>
         : IMessageDeserializer<TMessage>
-        //where TMessage : BaseMessage
         where TMessage : DomainMessage<TAggregateId>
         where TAggregateId : DomainEntityId
     {
