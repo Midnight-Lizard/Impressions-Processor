@@ -12,22 +12,23 @@ namespace MidnightLizard.Impressions.Infrastructure.AutofacModules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterAssemblyTypes(typeof(DomainEventDispatcher<>).GetTypeInfo().Assembly)
+            var ass = this.GetType().Assembly;
+
+            builder.RegisterAssemblyTypes(ass)
                 .AsClosedTypesOf(typeof(IDomainEventDispatcher<>))
                 .SingleInstance();
 
-            builder.RegisterAssemblyTypes(typeof(DomainEventStore<>).GetTypeInfo().Assembly)
+            builder.RegisterAssemblyTypes(ass)
                 .AsClosedTypesOf(typeof(IDomainEventStore<>))
+                .SingleInstance();
+
+            builder.RegisterAssemblyTypes(ass)
+                .AsClosedTypesOf(typeof(IAggregateSnapshotAccessor<,>))
                 .SingleInstance();
 
             builder.RegisterType<MessagingQueue>()
                 .As<IMessagingQueue>()
                 .SingleInstance();
-
-                // TODO: fix it))
-            //builder.RegisterType<ImpressionsSnapshotAccessor>()
-            //    .As<IAggregateSnapshotAccessor<Impressions<int, int>, ImpressionsObjectId>>()
-            //    .SingleInstance();
         }
     }
 }
