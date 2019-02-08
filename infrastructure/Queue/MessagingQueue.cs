@@ -8,7 +8,6 @@ using MidnightLizard.Impressions.Infrastructure.Serialization.Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,7 +77,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
         public async Task ResumeProcessing(CancellationToken token)
         {
             this.queueStatus = QueueStatus.Stopped;
-            await BeginProcessing(token);
+            await this.BeginProcessing(token);
         }
 
         public async Task BeginProcessing(CancellationToken token)
@@ -90,7 +89,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
                 {
                     while (this.queueStatus == QueueStatus.Running)
                     {
-                        await Task.Delay(timeout);
+                        await Task.Delay(this.timeout);
                     }
                 });
             }
@@ -113,17 +112,17 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
                         this.eventsConsumer = eventsConsumer;
                         this.requestsConsumer = requestsConsumer;
 
-                        this.eventsConsumer.OnPartitionsAssigned += EventsConsumerOnPartitionsAssigned;
-                        this.eventsConsumer.OnPartitionsRevoked += EventsConsumerOnPartitionsRevoked;
+                        this.eventsConsumer.OnPartitionsAssigned += this.EventsConsumerOnPartitionsAssigned;
+                        this.eventsConsumer.OnPartitionsRevoked += this.EventsConsumerOnPartitionsRevoked;
 
-                        this.eventsConsumer.Subscribe(kafkaConfig.EVENT_TOPICS);
-                        this.requestsConsumer.Subscribe(kafkaConfig.REQUEST_TOPICS);
+                        this.eventsConsumer.Subscribe(this.kafkaConfig.EVENT_TOPICS);
+                        this.requestsConsumer.Subscribe(this.kafkaConfig.REQUEST_TOPICS);
 
                         while (this.queueStatus == QueueStatus.Running && !this.cancellationToken.IsCancellationRequested)
                         {
-                            if (this.thereMayBeNewMessages && HasNewMessages(this.eventsConsumer, this.assignedEventsPartitions))
+                            if (this.thereMayBeNewMessages && this.HasNewMessages(this.eventsConsumer, this.assignedEventsPartitions))
                             {
-                                if (this.eventsConsumer.Consume(out var @event, timeout))
+                                if (this.eventsConsumer.Consume(out var @event, this.timeout))
                                 {
                                     await this.HandleMessage(@event);
                                     await this.eventsConsumer.CommitAsync(@event);
@@ -132,7 +131,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
                             else
                             {
                                 this.thereMayBeNewMessages = false;
-                                if (this.requestsConsumer.Consume(out var request, timeout))
+                                if (this.requestsConsumer.Consume(out var request, this.timeout))
                                 {
                                     this.thereMayBeNewMessages = true;
                                     await this.HandleMessage(request);
@@ -144,7 +143,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogError(ex, "Failed to consume new messages");
+                    this.logger.LogError(ex, "Failed to consume or handle new messages");
                     this.errorCount++;
                 }
                 finally
@@ -166,17 +165,21 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
 
         protected bool HasNewMessages(Consumer<string, string> consumer, List<TopicPartition> partitions)
         {
-            if (partitions == null || partitions.Count == 0) return true;
+            if (partitions == null || partitions.Count == 0)
+            {
+                return true;
+            }
+
             try
             {
-                var currentEventPositions = consumer.Committed(partitions, timeout);
+                var currentEventPositions = consumer.Committed(partitions, this.timeout);
                 if (!currentEventPositions.Exists(pos => pos.Error.HasError))
                 {
                     foreach (var curPos in currentEventPositions)
                     {
                         try
                         {
-                            var finPos = consumer.QueryWatermarkOffsets(curPos.TopicPartition, timeout);
+                            var finPos = consumer.QueryWatermarkOffsets(curPos.TopicPartition, this.timeout);
                             if (finPos.High != 0 && (curPos.Offset < finPos.High || finPos.High == Offset.Invalid))
                             {
                                 return true;
@@ -205,7 +208,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
         protected void EventsConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
         {
             this.eventsConsumer.Unassign();
-            assignedEventsPartitions = null;
+            this.assignedEventsPartitions = null;
         }
 
         protected void EventsConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
@@ -215,7 +218,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
                 try
                 {
                     this.eventsConsumer.Assign(partitions);
-                    assignedEventsPartitions = partitions;
+                    this.assignedEventsPartitions = partitions;
                 }
                 catch (Exception ex)
                 {
@@ -253,6 +256,12 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
                         else
                         {
                             this.logger.LogError($"Failed to handle {info} with error: {handleResult.ErrorMessage}");
+                        }
+
+                        if (handleResult.ProblemLevel == Commons.Domain.Results.DomainProblemLevel.Infrastructure)
+                        {
+                            // triggering retry if the problem is on the infrastracture level
+                            throw handleResult.Exception ?? new ApplicationException(handleResult.ErrorMessage);
                         }
                     }
                     else

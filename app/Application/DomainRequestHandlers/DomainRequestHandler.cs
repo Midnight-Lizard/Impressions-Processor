@@ -65,7 +65,10 @@ namespace MidnightLizard.Impressions.Processor.Application.DomainRequestHandlers
                     var error = dispatchResults.Values.FirstOrDefault(result => result.HasError);
                     if (error != null)
                     {
-                        this.memoryCache.Remove(aggregateSnapshot.Aggregate.Id);
+                        if (this.aggregatesConfig.Value.AGGREGATE_CACHE_ENABLED)
+                        {
+                            this.memoryCache.Remove(aggregateSnapshot.Aggregate.Id);
+                        }
                         return error;
                     }
                     else
