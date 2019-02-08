@@ -31,13 +31,13 @@ namespace MidnightLizard.Impressions.Processor.Application.DomainRequestHandlers
             IMemoryCache memoryCache,
             IDomainEventDispatcher<TAggregateId> eventsDispatcher,
             IAggregateSnapshotAccessor<TAggregate, TAggregateId> aggregateSnapshot,
-            IDomainEventStore<TAggregateId> eventsAccessor)
+            IDomainEventStore<TAggregateId> eventStrore)
         {
             this.aggregatesConfig = aggConfig;
             this.memoryCache = memoryCache;
             this.eventsDispatcher = eventsDispatcher;
             this.aggregateSnapshotAccessor = aggregateSnapshot;
-            this.eventStrore = eventsAccessor;
+            this.eventStrore = eventStrore;
         }
 
         protected abstract void
@@ -142,7 +142,7 @@ namespace MidnightLizard.Impressions.Processor.Application.DomainRequestHandlers
 
             if (eventsResult.Events.Count() > 0)
             {
-                aggregateSnapshot.Aggregate.ReplayDomainEvents(eventsResult.Events.Select(x => (x.Payload, x.UserId)));
+                aggregateSnapshot.Aggregate.ReplayEventSourcedDomainEvents(eventsResult.Events.Select(x => (x.Payload, x.UserId)));
                 aggregateSnapshot.RequestTimestamp = eventsResult.Events.Max(e => e.RequestTimestamp);
             }
 

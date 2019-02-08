@@ -1,15 +1,12 @@
 ﻿using Elasticsearch.Net;
-using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Interfaces;
 using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
-using MidnightLizard.Impressions.Domain.PublicSchemeAggregate;
 using MidnightLizard.Impressions.Infrastructure.Configuration;
 using MidnightLizard.Impressions.Infrastructure.Serialization.Common;
 using Nest;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MidnightLizard.Impressions.Infrastructure.EventStore
@@ -26,15 +23,15 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
         {
             this.config = config;
             this.messageSerializer = messageSerializer;
-            this.elasticClient = CreateElasticClient();
-            CheckIndexExists();
+            this.elasticClient = this.CreateElasticClient();
+            this.CheckIndexExists();
         }
 
         protected virtual void CheckIndexExists()
         {
             if ((this.elasticClient.IndexExists(this.IndexName)).Exists == false)
             {
-                CreateIndex();
+                this.CreateIndex();
             }
         }
 
@@ -43,7 +40,7 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
             this.elasticClient
                 .CreateIndex(this.IndexName, ix => ix
                     .Mappings(map => map
-                        .Map<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(tm => tm
+                        .Map<ITransportMessage<EventSourcedDomainEvent<TAggregateId>, TAggregateId>>(tm => tm
                             .RoutingField(x => x.Required())
                             .Properties(prop => prop
                                 .Keyword(x => x.Name(nameof(Type)))
@@ -51,7 +48,7 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
                                 .Keyword(x => x.Name(n => n.CorrelationId))
                                 .Date(x => x.Name(n => n.RequestTimestamp))
                                 .Date(x => x.Name(n => n.EventTimestamp))
-                                .Object<DomainEvent<TAggregateId>>(e => e
+                                .Object<EventSourcedDomainEvent<TAggregateId>>(e => e
                                     .Name(x => x.Payload)
                                     .Properties(eProp => eProp
                                         .Keyword(x => x.Name(n => n.Id))
@@ -66,17 +63,17 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
 
         protected virtual ElasticClient CreateElasticClient()
         {
-            var node = new Uri(config.ELASTIC_SEARCH_CLIENT_URL);
-            return new ElasticClient(InitDefaultMapping(new ConnectionSettings(
+            var node = new Uri(this.config.ELASTIC_SEARCH_CLIENT_URL);
+            return new ElasticClient(this.InitDefaultMapping(new ConnectionSettings(
                 new SingleNodeConnectionPool(node),
-                (builtin, settings) => new DomainEventSerializer(messageSerializer))));
+                (builtin, settings) => new DomainEventSerializer(this.messageSerializer))));
         }
 
         protected virtual ConnectionSettings InitDefaultMapping(ConnectionSettings connectionSettings)
         {
             return connectionSettings
                 .DefaultFieldNameInferrer(i => i)
-                .DefaultMappingFor<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(map => map
+                .DefaultMappingFor<ITransportMessage<EventSourcedDomainEvent<TAggregateId>, TAggregateId>>(map => map
                      .IdProperty(to => to.Id)
                      .RoutingProperty(x => x.AggregateId)
                      .IndexName(this.IndexName)
@@ -85,7 +82,7 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
 
         public async Task<DomainEventsResult<TAggregateId>> GetEvents(TAggregateId aggregateId, int sinceGeneration)
         {
-            var results = await this.elasticClient.SearchAsync<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(s => s
+            var results = await this.elasticClient.SearchAsync<ITransportMessage<EventSourcedDomainEvent<TAggregateId>, TAggregateId>>(s => s
                .Routing(aggregateId.ToString())
                .Sort(ss => ss.Ascending(x => x.Payload.Generation))
                .Query(q => q
@@ -102,10 +99,10 @@ namespace MidnightLizard.Impressions.Infrastructure.EventStore
             return new DomainEventsResult<TAggregateId>(true, results.OriginalException, results.ServerError?.Error?.Reason);
         }
 
-        public async Task<DomainResult> SaveEvent(ITransportMessage<DomainEvent<TAggregateId>> @event)
+        public async Task<DomainResult> SaveEvent(ITransportMessage<EventSourcedDomainEvent<TAggregateId>> @event)
         {
-            var result = await this.elasticClient.UpdateAsync<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>, object>(
-                new DocumentPath<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(@event.Payload.Id),
+            var result = await this.elasticClient.UpdateAsync<ITransportMessage<EventSourcedDomainEvent<TAggregateId>, TAggregateId>, object>(
+                new DocumentPath<ITransportMessage<EventSourcedDomainEvent<TAggregateId>, TAggregateId>>(@event.Payload.Id),
                 u => u
                     .Routing(@event.Payload.AggregateId.ToString())
                     .Doc(@event)

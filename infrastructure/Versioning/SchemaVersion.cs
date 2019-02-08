@@ -19,6 +19,6 @@ namespace MidnightLizard.Impressions.Infrastructure.Versioning
             return Value?.ToString();
         }
 
-        public static SchemaVersion Latest { get; } = new SchemaVersion("10.1.6");
+        public static SchemaVersion Latest { get; } = new SchemaVersion("10.2.0");
     }
 }

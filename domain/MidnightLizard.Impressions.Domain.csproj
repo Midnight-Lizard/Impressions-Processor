@@ -10,11 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="8.1.2" />
+    <PackageReference Include="FluentValidation" Version="8.1.3" />
     <PackageReference Include="MediatR" Version="6.0.0" />
-    <PackageReference Include="MidnightLizard.Commons.Domain" Version="2.2.1" />
+    <!--<PackageReference Include="MidnightLizard.Commons.Domain" Version="2.2.2" />-->
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Commons\Domain\package\MidnightLizard.Commons.Domain.csproj" />
   </ItemGroup>
 
   <Choose>
@@ -22,8 +26,8 @@
       <ItemGroup>
         <PackageReference Include="MidnightLizard.Testing.Utilities" Version="2.3.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
-          <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
         </PackageReference>
       </ItemGroup>
     </When>

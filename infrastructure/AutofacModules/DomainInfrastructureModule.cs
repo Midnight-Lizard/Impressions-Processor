@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using MidnightLizard.Commons.Domain.Interfaces;
-using MidnightLizard.Impressions.Domain.PublicSchemeAggregate;
+using MidnightLizard.Impressions.Domain.ImpressionsAggregate;
 using MidnightLizard.Impressions.Infrastructure.EventStore;
 using MidnightLizard.Impressions.Infrastructure.Queue;
 using MidnightLizard.Impressions.Infrastructure.Snapshot;
@@ -24,12 +24,10 @@ namespace MidnightLizard.Impressions.Infrastructure.AutofacModules
                 .As<IMessagingQueue>()
                 .SingleInstance();
 
-            builder.RegisterType<ImpressionsSnapshotAccessor>()
-                .As<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>>()
-                .SingleInstance();
-
-            //builder.RegisterAssemblyTypes(typeof(DomainInfrastructureModule).GetTypeInfo().Assembly)
-            //    .AsImplementedInterfaces();
+                // TODO: fix it))
+            //builder.RegisterType<ImpressionsSnapshotAccessor>()
+            //    .As<IAggregateSnapshotAccessor<Impressions<int, int>, ImpressionsObjectId>>()
+            //    .SingleInstance();
         }
     }
 }

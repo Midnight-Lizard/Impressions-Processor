@@ -11,7 +11,5 @@ namespace MidnightLizard.Impressions.Infrastructure.Configuration
 
         public IEnumerable<string> EVENT_TOPICS { get; set; }
         public IEnumerable<string> REQUEST_TOPICS { get; set; }
-
-        public string IMPRESSIONS_EVENTS_TOPIC { get; set; }
     }
 }

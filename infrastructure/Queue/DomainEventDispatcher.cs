@@ -21,7 +21,9 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
         protected readonly IMessageSerializer messageSerializer;
         protected ISerializingProducer<string, string> producer;
 
-        protected abstract string GetEventTopicName();
+        protected abstract string EventSourcedTopicName { get; }
+        protected abstract string IntegrationTopicName { get; }
+        protected abstract string FailedEventsTopicName { get; }
 
         public DomainEventDispatcher(
             KafkaConfig kafkaConfig,
@@ -36,16 +38,33 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
         }
 
         public async Task<DomainResult> DispatchEvent(
-            TransportMessage<DomainEvent<TAggregateId>, TAggregateId> transportEvent)
+            ITransportMessage<DomainEvent<TAggregateId>, TAggregateId> transportEvent)
         {
             try
             {
-                var message = this.messageSerializer.SerializeMessage(transportEvent);
-                var result = await producer.ProduceAsync(this.GetEventTopicName(),
-                    transportEvent.Payload.AggregateId.ToString(), message);
-                if (result.Error.HasError)
+                var topicName = "";
+                switch (transportEvent.Payload)
                 {
-                    return new DomainResult(result.Error.Reason);
+                    case IntegrationEvent<TAggregateId> _:
+                        topicName = this.IntegrationTopicName; break;
+
+                    case EventSourcedDomainEvent<TAggregateId> _:
+                        topicName = this.EventSourcedTopicName; break;
+
+                    case FailedDomainEvent<TAggregateId> _:
+                        topicName = this.FailedEventsTopicName; break;
+
+                    default: break;
+                }
+                if (!string.IsNullOrEmpty(topicName))
+                {
+                    var message = this.messageSerializer.SerializeMessage(transportEvent);
+                    var result = await this.producer.ProduceAsync(topicName,
+                        transportEvent.Payload.AggregateId.ToString(), message);
+                    if (result.Error.HasError)
+                    {
+                        return new DomainResult(result.Error.Reason);
+                    }
                 }
                 return DomainResult.Ok;
             }

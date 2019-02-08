@@ -69,9 +69,18 @@ namespace MidnightLizard.Impressions.Processor
                     .DeserializeObject<string[]>(
                         Configuration.GetValue<string>(
                             nameof(KafkaConfig.REQUEST_TOPICS))),
+            });
 
-                IMPRESSIONS_EVENTS_TOPIC = Configuration.GetValue<string>(
-                    nameof(KafkaConfig.IMPRESSIONS_EVENTS_TOPIC))
+            services.AddSingleton<ImpressionsKafkaConfig>(x => new ImpressionsKafkaConfig
+            {
+                IMPRESSIONS_INTERNAL_EVENTS_TOPIC = this.Configuration.GetValue<string>(
+                    nameof(ImpressionsKafkaConfig.IMPRESSIONS_INTERNAL_EVENTS_TOPIC)),
+
+                IMPRESSIONS_FAILED_EVENTS_TOPIC = this.Configuration.GetValue<string>(
+                    nameof(ImpressionsKafkaConfig.IMPRESSIONS_FAILED_EVENTS_TOPIC)),
+
+                IMPRESSIONS_INTEGRATION_EVENTS_TOPIC = this.Configuration.GetValue<string>(
+                    nameof(ImpressionsKafkaConfig.IMPRESSIONS_INTEGRATION_EVENTS_TOPIC)),
             });
 
             services.AddMemoryCache();
