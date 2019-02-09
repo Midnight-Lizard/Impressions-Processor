@@ -1,10 +1,10 @@
-﻿using MidnightLizard.Impressions.Domain.ImpressionsAggregate;
+﻿using MidnightLizard.Impressions.Domain.FavoritesAggregate;
 using MidnightLizard.Impressions.Infrastructure.Configuration;
 using MidnightLizard.Impressions.Infrastructure.Serialization.Common;
 
 namespace MidnightLizard.Impressions.Infrastructure.Queue
 {
-    public class FavoritesEventDispatcher : DomainEventDispatcher<ImpressionsObjectId>
+    public class FavoritesEventDispatcher : DomainEventDispatcher<FavoritesId>
     {
         private readonly FavoritesKafkaConfig impressionsKafkaConfig;
 

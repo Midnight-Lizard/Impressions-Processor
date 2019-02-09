@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace MidnightLizard.Impressions.Domain.LikesAggregate.Events
 {
-    public class LikesChangedEvent : ImpressionsChangedEvent
+    public class LikesChangedEvent : ImpressionsChangedEvent<LikesId>
     {
         public int TotalLikes => this.impressionists.Count;
         public IReadOnlyCollection<UserId> LikedBy
@@ -17,7 +17,7 @@ namespace MidnightLizard.Impressions.Domain.LikesAggregate.Events
         protected LikesChangedEvent() : base() { }
 
         public LikesChangedEvent(
-            ImpressionsObjectId aggregateId,
+            LikesId aggregateId,
             ImpressionsObjectType objectType,
             IReadOnlyCollection<UserId> likedBy) : base(aggregateId, objectType, likedBy)
         { }

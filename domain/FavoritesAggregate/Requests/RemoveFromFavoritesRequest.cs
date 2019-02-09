@@ -2,7 +2,7 @@
 
 namespace MidnightLizard.Impressions.Domain.FavoritesAggregate.Requests
 {
-    public class RemoveFromFavoritesRequest : RemoveImpressionRequest
+    public class RemoveFromFavoritesRequest : RemoveImpressionRequest<FavoritesId>
     {
     }
 }

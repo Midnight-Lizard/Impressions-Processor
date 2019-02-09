@@ -2,7 +2,7 @@
 
 namespace MidnightLizard.Impressions.Domain.FavoritesAggregate.Requests
 {
-    public class AddToFavoritesRequest : AddImpressionRequest
+    public class AddToFavoritesRequest : AddImpressionRequest<FavoritesId>
     {
     }
 }

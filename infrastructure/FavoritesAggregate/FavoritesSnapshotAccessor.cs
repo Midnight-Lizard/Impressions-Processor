@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Impressions.Infrastructure.FavoritesAggregate
 {
-    public class FavoritesSnapshotAccessor : AggregateSnapshotAccessor<Favorites, ImpressionsObjectId>
+    public class FavoritesSnapshotAccessor : AggregateSnapshotAccessor<Favorites, FavoritesId>
     {
         public FavoritesSnapshotAccessor(SchemaVersion version, ElasticSearchConfig config)
             : base(version.ToString(), config)
         {
         }
 
-        protected override Favorites CreateNewAggregate(ImpressionsObjectId id)
+        protected override Favorites CreateNewAggregate(FavoritesId id)
         {
             return new Favorites(id);
         }
@@ -28,12 +28,12 @@ namespace MidnightLizard.Impressions.Infrastructure.FavoritesAggregate
             return md.Map<Favorites>(tm => tm
                 .Properties(prop => prop
                     .Keyword(x => x.Name(nameof(Version)))
-                    .Date(x => x.Name(nameof(AggregateSnapshot<Likes, ImpressionsObjectId>.RequestTimestamp)))
+                    .Date(x => x.Name(nameof(AggregateSnapshot<Favorites, FavoritesId>.RequestTimestamp)))
                     .Keyword(x => x.Name(n => n.ObjectType))
                     .Keyword(x => x.Name(n => n.FavoritedBy))));
         }
 
-        public override Task Save(AggregateSnapshot<Favorites, ImpressionsObjectId> snapshot)
+        public override Task Save(AggregateSnapshot<Favorites, FavoritesId> snapshot)
         {
             return this.elasticClient.UpdateAsync<Favorites, object>(
                 new DocumentPath<Favorites>(snapshot.Aggregate.Id.Value),

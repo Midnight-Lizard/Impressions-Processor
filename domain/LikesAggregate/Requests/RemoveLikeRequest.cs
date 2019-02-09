@@ -2,7 +2,7 @@
 
 namespace MidnightLizard.Impressions.Domain.LikesAggregate.Requests
 {
-    public class RemoveLikeRequest : RemoveImpressionRequest
+    public class RemoveLikeRequest : RemoveImpressionRequest<LikesId>
     {
     }
 }

@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 namespace MidnightLizard.Impressions.Domain.LikesAggregate
 {
-    public class Likes : ImpressionsAggregate.Impressions
+    public class Likes : ImpressionsAggregate.Impressions<LikesId>
     {
         protected Likes() : base() { }
-        public Likes(ImpressionsObjectId aggregateId) : base(aggregateId) { }
+        public Likes(LikesId aggregateId) : base(aggregateId) { }
 
         public IReadOnlyCollection<UserId> LikedBy
         {
@@ -17,17 +17,17 @@ namespace MidnightLizard.Impressions.Domain.LikesAggregate
             private set => this._Impressionists = new HashSet<UserId>(value);
         }
 
-        protected override ImpressionAddedEvent CreateImpressionAddedEvent(ImpressionsObjectType objectType)
+        protected override ImpressionAddedEvent<LikesId> CreateImpressionAddedEvent(ImpressionsObjectType objectType)
         {
             return new LikeAddedEvent(this.Id, objectType);
         }
 
-        protected override ImpressionRemovedEvent CreateImpressionRemovedEvent(ImpressionsObjectType objectType)
+        protected override ImpressionRemovedEvent<LikesId> CreateImpressionRemovedEvent(ImpressionsObjectType objectType)
         {
             return new LikeRemovedEvent(this.Id, objectType);
         }
 
-        protected override ImpressionsChangedEvent CreateImpressionsChangedEvent()
+        protected override ImpressionsChangedEvent<LikesId> CreateImpressionsChangedEvent()
         {
             return new LikesChangedEvent(this.Id, this.ObjectType, this.LikedBy);
         }

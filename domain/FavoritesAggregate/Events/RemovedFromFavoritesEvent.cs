@@ -3,11 +3,11 @@ using MidnightLizard.Impressions.Domain.ImpressionsAggregate.Events;
 
 namespace MidnightLizard.Impressions.Domain.FavoritesAggregate.Events
 {
-    public class RemovedFromFavoritesEvent : ImpressionRemovedEvent
+    public class RemovedFromFavoritesEvent : ImpressionRemovedEvent<FavoritesId>
     {
         protected RemovedFromFavoritesEvent() : base() { }
 
-        public RemovedFromFavoritesEvent(ImpressionsObjectId aggregateId, ImpressionsObjectType objectType)
+        public RemovedFromFavoritesEvent(FavoritesId aggregateId, ImpressionsObjectType objectType)
             : base(aggregateId, objectType)
         { }
     }

@@ -1,10 +1,10 @@
-﻿using MidnightLizard.Impressions.Domain.ImpressionsAggregate;
+﻿using MidnightLizard.Impressions.Domain.LikesAggregate;
 using MidnightLizard.Impressions.Infrastructure.Configuration;
 using MidnightLizard.Impressions.Infrastructure.Serialization.Common;
 
 namespace MidnightLizard.Impressions.Infrastructure.Queue
 {
-    public class LikesEventDispatcher : DomainEventDispatcher<ImpressionsObjectId>
+    public class LikesEventDispatcher : DomainEventDispatcher<LikesId>
     {
         private readonly LikesKafkaConfig impressionsKafkaConfig;
 

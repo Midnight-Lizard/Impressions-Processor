@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 namespace MidnightLizard.Impressions.Domain.ImpressionsAggregate.Events
 {
-    public abstract class ImpressionsChangedEvent : IntegrationEvent<ImpressionsObjectId>
+    public abstract class ImpressionsChangedEvent<TAggregateId> : IntegrationEvent<TAggregateId>
+        where TAggregateId : ImpressionsObjectId
     {
         protected IReadOnlyCollection<UserId> impressionists;
 
@@ -13,7 +14,7 @@ namespace MidnightLizard.Impressions.Domain.ImpressionsAggregate.Events
         protected ImpressionsChangedEvent() : base() { }
 
         public ImpressionsChangedEvent(
-            ImpressionsObjectId aggregateId,
+            TAggregateId aggregateId,
             ImpressionsObjectType objectType,
             IReadOnlyCollection<UserId> impressionists) : base(aggregateId)
         {

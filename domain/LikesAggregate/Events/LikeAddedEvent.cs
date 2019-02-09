@@ -3,11 +3,11 @@ using MidnightLizard.Impressions.Domain.ImpressionsAggregate.Events;
 
 namespace MidnightLizard.Impressions.Domain.LikesAggregate.Events
 {
-    public class LikeAddedEvent : ImpressionAddedEvent
+    public class LikeAddedEvent : ImpressionAddedEvent<LikesId>
     {
         protected LikeAddedEvent() : base() { }
 
-        public LikeAddedEvent(ImpressionsObjectId aggregateId, ImpressionsObjectType objectType)
+        public LikeAddedEvent(LikesId aggregateId, ImpressionsObjectType objectType)
             : base(aggregateId, objectType)
         { }
     }

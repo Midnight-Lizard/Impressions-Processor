@@ -1,33 +1,33 @@
 ﻿using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Impressions.Domain.ImpressionsAggregate.Events;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MidnightLizard.Impressions.Domain.ImpressionsAggregate
 {
-    public abstract partial class Impressions : AggregateRoot<ImpressionsObjectId>
+    public abstract partial class Impressions<TAggregateId> : AggregateRoot<TAggregateId>
+        where TAggregateId : ImpressionsObjectId
     {
         protected HashSet<UserId> _Impressionists = new HashSet<UserId>();
 
         public ImpressionsObjectType ObjectType { get; protected set; }
 
         public Impressions() { }
-        public Impressions(ImpressionsObjectId objectId) : base(objectId) { }
+        public Impressions(TAggregateId objectId) : base(objectId) { }
 
-        protected abstract ImpressionAddedEvent CreateImpressionAddedEvent(
+        protected abstract ImpressionAddedEvent<TAggregateId> CreateImpressionAddedEvent(
             ImpressionsObjectType objectType);
 
-        protected abstract ImpressionRemovedEvent CreateImpressionRemovedEvent(
+        protected abstract ImpressionRemovedEvent<TAggregateId> CreateImpressionRemovedEvent(
             ImpressionsObjectType objectType);
 
-        protected abstract ImpressionsChangedEvent CreateImpressionsChangedEvent();
+        protected abstract ImpressionsChangedEvent<TAggregateId> CreateImpressionsChangedEvent();
 
         private bool ImpressionistIsValid(UserId impressionistId)
         {
             var validationResults = new DomainEntityIdValidator<string>().Validate(impressionistId);
             if (!validationResults.IsValid)
             {
-                this.AddFailedDomainEvent(new ImpressionistIdValidationFailedEvent(this.Id, validationResults));
+                this.AddFailedDomainEvent(new ImpressionistIdValidationFailedEvent<TAggregateId>(this.Id, validationResults));
                 return false;
             }
 
@@ -39,7 +39,7 @@ namespace MidnightLizard.Impressions.Domain.ImpressionsAggregate
             var validationResult = ImpressionsObjectType.Validator.Validate(objectType);
             if (!validationResult.IsValid)
             {
-                this.AddFailedDomainEvent(new ImpressionsObjectTypeValidationFailedEvent(this.Id, validationResult));
+                this.AddFailedDomainEvent(new ImpressionsObjectTypeValidationFailedEvent<TAggregateId>(this.Id, validationResult));
                 return false;
             }
             return true;

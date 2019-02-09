@@ -3,12 +3,13 @@ using MidnightLizard.Commons.Domain.Messaging;
 
 namespace MidnightLizard.Impressions.Domain.ImpressionsAggregate.Events
 {
-    public class ImpressionsObjectTypeValidationFailedEvent : ValidationFailedEvent<ImpressionsObjectId>
+    public class ImpressionsObjectTypeValidationFailedEvent<TAggregateId> : ValidationFailedEvent<TAggregateId>
+        where TAggregateId : ImpressionsObjectId
     {
         protected ImpressionsObjectTypeValidationFailedEvent() { }
 
         public ImpressionsObjectTypeValidationFailedEvent(
-            ImpressionsObjectId aggregateId, ValidationResult validationResult)
+            TAggregateId aggregateId, ValidationResult validationResult)
             : base(aggregateId, validationResult)
         {
         }

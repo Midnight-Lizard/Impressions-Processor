@@ -2,7 +2,7 @@
 
 namespace MidnightLizard.Impressions.Domain.LikesAggregate.Requests
 {
-    public class AddLikeRequest : AddImpressionRequest
+    public class AddLikeRequest : AddImpressionRequest<LikesId>
     {
     }
 }

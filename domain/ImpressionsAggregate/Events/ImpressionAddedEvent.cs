@@ -1,13 +1,14 @@
 ﻿namespace MidnightLizard.Impressions.Domain.ImpressionsAggregate.Events
 {
-    public abstract class ImpressionAddedEvent : ImpressionEventSourcedDomainEvent
+    public abstract class ImpressionAddedEvent<TAggregateId> : ImpressionEventSourcedDomainEvent<TAggregateId>
+        where TAggregateId : ImpressionsObjectId
     {
         public ImpressionsObjectType ObjectType { get; protected set; }
 
         protected ImpressionAddedEvent() { }
 
         public ImpressionAddedEvent(
-            ImpressionsObjectId aggregateId,
+            TAggregateId aggregateId,
             ImpressionsObjectType objectType) : base(aggregateId)
         {
             this.ObjectType = objectType;

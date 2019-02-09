@@ -2,7 +2,8 @@
 
 namespace MidnightLizard.Impressions.Domain.ImpressionsAggregate.Requests
 {
-    public abstract class ImpressionsDomainRequest : DomainRequest<ImpressionsObjectId>
+    public abstract class ImpressionsDomainRequest<TAggregateId> : DomainRequest<TAggregateId>
+        where TAggregateId : ImpressionsObjectId
     {
     }
 }

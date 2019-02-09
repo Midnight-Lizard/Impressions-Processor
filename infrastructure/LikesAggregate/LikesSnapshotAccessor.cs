@@ -1,5 +1,4 @@
 ﻿using MidnightLizard.Commons.Domain.Model;
-using MidnightLizard.Impressions.Domain.ImpressionsAggregate;
 using MidnightLizard.Impressions.Domain.LikesAggregate;
 using MidnightLizard.Impressions.Infrastructure.Configuration;
 using MidnightLizard.Impressions.Infrastructure.Snapshot;
@@ -10,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Impressions.Infrastructure.LikesAggregate
 {
-    public class LikesSnapshotAccessor : AggregateSnapshotAccessor<Likes, ImpressionsObjectId>
+    public class LikesSnapshotAccessor : AggregateSnapshotAccessor<Likes, LikesId>
     {
         public LikesSnapshotAccessor(SchemaVersion version, ElasticSearchConfig config)
             : base(version.ToString(), config)
         {
         }
 
-        protected override Likes CreateNewAggregate(ImpressionsObjectId id)
+        protected override Likes CreateNewAggregate(LikesId id)
         {
             return new Likes(id);
         }
@@ -27,12 +26,12 @@ namespace MidnightLizard.Impressions.Infrastructure.LikesAggregate
             return md.Map<Likes>(tm => tm
                 .Properties(prop => prop
                     .Keyword(x => x.Name(nameof(Version)))
-                    .Date(x => x.Name(nameof(AggregateSnapshot<Likes, ImpressionsObjectId>.RequestTimestamp)))
+                    .Date(x => x.Name(nameof(AggregateSnapshot<Likes, LikesId>.RequestTimestamp)))
                     .Keyword(x => x.Name(n => n.ObjectType))
                     .Keyword(x => x.Name(n => n.LikedBy))));
         }
 
-        public override Task Save(AggregateSnapshot<Likes, ImpressionsObjectId> snapshot)
+        public override Task Save(AggregateSnapshot<Likes, LikesId> snapshot)
         {
             return this.elasticClient.UpdateAsync<Likes, object>(
                 new DocumentPath<Likes>(snapshot.Aggregate.Id.Value),

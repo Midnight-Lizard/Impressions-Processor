@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Impressions.Domain.FavoritesAggregate.Events
 {
-    public class FavoritesChangedEvent : ImpressionsChangedEvent
+    public class FavoritesChangedEvent : ImpressionsChangedEvent<FavoritesId>
     {
         public int TotalFavoriters => this.impressionists.Count;
         public IReadOnlyCollection<UserId> FavoritedBy
@@ -20,7 +20,7 @@ namespace MidnightLizard.Impressions.Domain.FavoritesAggregate.Events
         protected FavoritesChangedEvent() : base() { }
 
         public FavoritesChangedEvent(
-            ImpressionsObjectId aggregateId,
+            FavoritesId aggregateId,
             ImpressionsObjectType objectType,
             IReadOnlyCollection<UserId> favoritedBy) : base(aggregateId, objectType, favoritedBy)
         { }

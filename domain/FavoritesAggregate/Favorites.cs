@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 namespace MidnightLizard.Impressions.Domain.FavoritesAggregate
 {
-    public class Favorites : ImpressionsAggregate.Impressions
+    public class Favorites : ImpressionsAggregate.Impressions<FavoritesId>
     {
         protected Favorites() : base() { }
-        public Favorites(ImpressionsObjectId aggregateId) : base(aggregateId) { }
+        public Favorites(FavoritesId aggregateId) : base(aggregateId) { }
 
         public IReadOnlyCollection<UserId> FavoritedBy
         {
@@ -17,17 +17,17 @@ namespace MidnightLizard.Impressions.Domain.FavoritesAggregate
             private set => this._Impressionists = new HashSet<UserId>(value);
         }
 
-        protected override ImpressionAddedEvent CreateImpressionAddedEvent(ImpressionsObjectType objectType)
+        protected override ImpressionAddedEvent<FavoritesId> CreateImpressionAddedEvent(ImpressionsObjectType objectType)
         {
             return new AddedToFavoritesEvent(this.Id, objectType);
         }
 
-        protected override ImpressionRemovedEvent CreateImpressionRemovedEvent(ImpressionsObjectType objectType)
+        protected override ImpressionRemovedEvent<FavoritesId> CreateImpressionRemovedEvent(ImpressionsObjectType objectType)
         {
             return new RemovedFromFavoritesEvent(this.Id, objectType);
         }
 
-        protected override ImpressionsChangedEvent CreateImpressionsChangedEvent()
+        protected override ImpressionsChangedEvent<FavoritesId> CreateImpressionsChangedEvent()
         {
             return new FavoritesChangedEvent(this.Id, this.ObjectType, this.FavoritedBy);
         }
