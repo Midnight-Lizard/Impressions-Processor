@@ -16,7 +16,7 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
     <PackageReference Include="MediatR" Version="6.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="6.0.1" />
-    <!--<PackageReference Include="MidnightLizard.Commons.Domain" Version="2.2.2" />-->
+    <PackageReference Include="MidnightLizard.Commons.Domain" Version="2.2.3" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
   </ItemGroup>
 
@@ -43,7 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Commons\Domain\package\MidnightLizard.Commons.Domain.csproj" />
     <ProjectReference Include="..\domain\MidnightLizard.Impressions.Domain.csproj" />
     <ProjectReference Include="..\infrastructure\MidnightLizard.Impressions.Infrastructure.csproj" />
   </ItemGroup>

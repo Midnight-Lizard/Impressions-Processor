@@ -10,13 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Commons\Domain\package\MidnightLizard.Commons.Domain.csproj" />
     <ProjectReference Include="..\domain\MidnightLizard.Impressions.Domain.csproj" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
     <PackageReference Include="Confluent.Kafka" Version="0.11.6" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
-    <!--<PackageReference Include="MidnightLizard.Commons.Domain" Version="2.2.2" />-->
+    <PackageReference Include="MidnightLizard.Commons.Domain" Version="2.2.3" />
     <PackageReference Include="NEST" Version="6.5.0" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
   </ItemGroup>
