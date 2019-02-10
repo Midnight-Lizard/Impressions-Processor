@@ -7,7 +7,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/app/bin/Debug/netcoreapp2.1/MidnightLizard.Impressions.Processor.dll",
+            "program": "${workspaceFolder}/app/bin/Debug/netcoreapp2.2/MidnightLizard.Impressions.Processor.dll",
             "args": [],
             "cwd": "${workspaceFolder}/app",
             "stopAtEntry": false,

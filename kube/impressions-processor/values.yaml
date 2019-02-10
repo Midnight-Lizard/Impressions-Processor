@@ -45,13 +45,13 @@ env:
   FAVORITES_FAILED_EVENTS_TOPIC: favorites-failed-events
   EVENT_TOPICS: |-
     [
-      "likes-events",
-      "favorites-events"
+      "likes-internal-events",
+      "favorites-internal-events"
     ]
   REQUEST_TOPICS: |-
     [
-      "likes-requests",
-      "favorites-requests"
+      "likes-internal-requests",
+      "favorites-internal-requests"
     ]
   KAFKA_EVENTS_CONSUMER_CONFIG: |-
     {
