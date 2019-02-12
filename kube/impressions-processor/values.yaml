@@ -50,8 +50,8 @@ env:
     ]
   REQUEST_TOPICS: |-
     [
-      "likes-internal-requests",
-      "favorites-internal-requests"
+      "likes-requests",
+      "favorites-requests"
     ]
   KAFKA_EVENTS_CONSUMER_CONFIG: |-
     {
