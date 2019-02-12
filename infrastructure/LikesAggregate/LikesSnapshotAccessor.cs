@@ -11,7 +11,7 @@ namespace MidnightLizard.Impressions.Infrastructure.LikesAggregate
 {
     public class LikesSnapshotAccessor : AggregateSnapshotAccessor<Likes, LikesId>
     {
-        public LikesSnapshotAccessor(SchemaVersion version, ElasticSearchConfig config)
+        public LikesSnapshotAccessor(SchemaVersion version, LikesElasticSearchConfig config)
             : base(version.ToString(), config)
         {
         }

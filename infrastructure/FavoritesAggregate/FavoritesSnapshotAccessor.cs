@@ -1,7 +1,5 @@
 ﻿using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Impressions.Domain.FavoritesAggregate;
-using MidnightLizard.Impressions.Domain.ImpressionsAggregate;
-using MidnightLizard.Impressions.Domain.LikesAggregate;
 using MidnightLizard.Impressions.Infrastructure.Configuration;
 using MidnightLizard.Impressions.Infrastructure.Snapshot;
 using MidnightLizard.Impressions.Infrastructure.Versioning;
@@ -13,7 +11,7 @@ namespace MidnightLizard.Impressions.Infrastructure.FavoritesAggregate
 {
     public class FavoritesSnapshotAccessor : AggregateSnapshotAccessor<Favorites, FavoritesId>
     {
-        public FavoritesSnapshotAccessor(SchemaVersion version, ElasticSearchConfig config)
+        public FavoritesSnapshotAccessor(SchemaVersion version, FavoritesElasticSearchConfig config)
             : base(version.ToString(), config)
         {
         }
