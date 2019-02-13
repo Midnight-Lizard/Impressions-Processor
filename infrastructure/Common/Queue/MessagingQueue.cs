@@ -236,6 +236,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
             }
             else
             {
+                this.logger.LogWarning($"Starting processing: {kafkaMessage.Value}");
                 var deserializationResult = this.messageSerializer.Deserialize(kafkaMessage.Value, kafkaMessage.Timestamp.UtcDateTime);
                 if (!deserializationResult.HasError)
                 {
@@ -266,7 +267,7 @@ namespace MidnightLizard.Impressions.Infrastructure.Queue
                     }
                     else
                     {
-                        this.logger.LogInformation(info);
+                        this.logger.LogWarning($"Successfully handled: {info}");
                     }
                 }
                 else
