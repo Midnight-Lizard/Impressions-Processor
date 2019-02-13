@@ -25,7 +25,7 @@ namespace MidnightLizard.Impressions.Processor.Application.FavoritesAggregate.Re
 
         protected override void HandleDomainRequest(Favorites aggregate, AddToFavoritesRequest request, UserId userId, CancellationToken cancellationToken)
         {
-            aggregate.RemoveImpression(userId, request.ObjectType);
+            aggregate.AddImpression(userId, request.ObjectType);
         }
     }
 }
