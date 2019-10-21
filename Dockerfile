@@ -15,10 +15,10 @@ RUN dotnet publish app -c ${DOTNET_CONFIG} -o ./results
 #===========================================#
 #				DOTNET	TEST				#
 #===========================================#
-FROM microsoft/dotnet:2.2-sdk as dotnet-test
-WORKDIR /test
-COPY --from=dotnet-build /build .
-RUN dotnet test -c Test
+# FROM microsoft/dotnet:2.2-sdk as dotnet-test
+# WORKDIR /test
+# COPY --from=dotnet-build /build .
+# RUN dotnet test -c Test
 
 #===========================================#
 #				IMAGE	BUILD				#
