@@ -13,7 +13,7 @@
     <PackageReference Include="FluentValidation" Version="8.1.3" />
     <PackageReference Include="MediatR" Version="6.0.0" />
     <PackageReference Include="MidnightLizard.Commons.Domain" Version="2.2.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
   </ItemGroup>
 
